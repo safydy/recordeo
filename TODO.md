@@ -10,10 +10,11 @@ Feature 1- implement a recorder page
   - [x] share screen/window
 - 1- [x] improve styles (css, layout, etc)
 - 2- [ ] add control buttons
-  - [ ] add start/stop recording
-  - [ ] add pause/resume recording
-  - [ ] add save recording
-  - [	] end streams on stop
+  - [x] add start/stop recording
+  - [x] add pause/resume recording
+  - [x] add save recording
+  - [x] end streams on stop
+- [ ] capture audio stream
 - 3- [ ] add recording status + time
 -	4- [ ] add config panel
   - [ ] add style for avatar

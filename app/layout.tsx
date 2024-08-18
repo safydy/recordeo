@@ -92,9 +92,9 @@ export default function RootLayout({
                         {/*just to skip the nav bar*/}
                     </Box>
                     {children}
-                    <Box sx={{bgcolor: 'background.default'}}>
-                        <Footer/>
-                    </Box>
+                    {/*<Box sx={{bgcolor: 'background.default'}}>*/}
+                    {/*    <Footer/>*/}
+                    {/*</Box>*/}
                     <ToggleCustomTheme
                         showCustomTheme={showCustomTheme}
                         toggleCustomTheme={toggleCustomTheme}

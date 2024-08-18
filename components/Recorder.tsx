@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, Avatar, Stack } from '@mui/material';
 import RecordRTC from 'recordrtc';
+import Box from "@mui/material/Box";
+import RecordControlButtons from "./RecordControlButtons";
 
 interface RecorderProps {
     // Potential props for customization
@@ -16,13 +17,18 @@ const Recorder: React.FC<RecorderProps> = () => {
     const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
     const [avatarPosition, setAvatarPosition] = useState({ x: 10, y: 10 });
     const recorderRef = useRef<MediaRecorder | null>(null);
+    const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
+    const [webcamStream, setWebcamStream] = useState<MediaStream | null>(null);
 
     const startRecording = async () => {
         try {
-            const screenStream = await getScreenStream();
-            const webcamStream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const currentScreenStream = await getScreenStream();
+            const currentWebcamStream = await navigator.mediaDevices.getUserMedia({ video: true });
 
-            const combinedStream = combineStreams(screenStream, webcamStream);
+            setScreenStream(currentScreenStream);
+            setWebcamStream(currentWebcamStream);
+
+            const combinedStream = combineStreams(currentScreenStream, currentWebcamStream);
             if (!combinedStream) return;
 
             const recorder = RecordRTC(combinedStream, { type: 'video' });
@@ -52,16 +58,16 @@ const Recorder: React.FC<RecorderProps> = () => {
         }
     }
 
-    const combineStreams = (screenStream, webcamStream) => {
+    const combineStreams = (currentScreenStream, currentWebcamStream) => {
         const canvas = canvasRef.current;
         if (!canvas) return;
 
         const screenVideo = document.createElement('video');
-        screenVideo.srcObject = screenStream;
+        screenVideo.srcObject = currentScreenStream;
         screenVideo.play();
 
         const webcamVideo = document.createElement('video');
-        webcamVideo.srcObject = webcamStream;
+        webcamVideo.srcObject = currentWebcamStream;
         webcamVideo.play();
 
         const context = canvas.getContext('2d');
@@ -69,7 +75,7 @@ const Recorder: React.FC<RecorderProps> = () => {
 
         const draw = () => {
             context.drawImage(screenVideo, 0, 0, canvas.width, canvas.height);
-            context.drawImage(webcamVideo, avatarPosition.x, avatarPosition.y, 64, 64); // Adjust dimensions and position
+            context.drawImage(webcamVideo, avatarPosition.x, avatarPosition.y, 64, 64);
             requestAnimationFrame(draw);
         };
 
@@ -80,6 +86,9 @@ const Recorder: React.FC<RecorderProps> = () => {
     const stopRecording = () => {
         if (recorderRef.current) {
             recorderRef.current.stopRecording(() => {
+                screenStream.stop();
+                webcamStream.stop();
+
                 setRecordedBlob(recorderRef.current.getBlob());
                 setIsRecording(false);
             });
@@ -88,22 +97,17 @@ const Recorder: React.FC<RecorderProps> = () => {
 
     return (
         <>
-            <div className="recorder">
+            <Box className="recorder">
                 {/* Screen recording element */}
                 <video ref={videoRef} autoPlay></video>
 
                 {/* Canvas for combining streams */}
                 <canvas ref={canvasRef} width={640} height={480}/>
 
-                <Button variant="contained" color="primary" onClick={startRecording}>
-                    Start Recording
-                </Button>
-                <Button variant="contained" color="secondary" onClick={stopRecording}>
-                    Stop Recording
-                </Button>
+                <RecordControlButtons onRecord={startRecording} onStop={stopRecording}/>
 
                 {recordedBlob && <video src={URL.createObjectURL(recordedBlob)} controls/>}
-            </div>
+            </Box>
         </>
     );
 };
