@@ -10,6 +10,7 @@ import {
     Pause,
     SaveAlt,
 } from "@mui/icons-material";
+import CtrlRecordBtn from "./CtrlRecordBtn";
 
 interface RecorderProps {
     // Potential props for customization
@@ -103,12 +104,7 @@ const Recorder: React.FC<RecorderProps> = () => {
                 <canvas ref={canvasRef} width={640} height={480}/>
 
                 <Box>
-                    <IconButton color="secondary" onClick={startRecording} sx={{mr: 1}} size="large">
-                        <FiberManualRecord/>
-                    </IconButton>
-                    <IconButton color="primary" onClick={stopRecording} size="large">
-                        <StopCircle/>
-                    </IconButton>
+                    <CtrlRecordBtn onRecord={startRecording} onStop={stopRecording}/>
                     <IconButton color="primary" size="large">
                         <Pause/>
                     </IconButton>
