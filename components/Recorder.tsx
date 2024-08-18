@@ -1,16 +1,9 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Button, IconButton, Avatar, Stack } from '@mui/material';
 import RecordRTC from 'recordrtc';
 import Box from "@mui/material/Box";
-import {
-    FiberManualRecord,
-    StopCircle,
-    Pause,
-    SaveAlt,
-} from "@mui/icons-material";
-import CtrlRecordBtn from "./CtrlRecordBtn";
+import RecordControlButtons from "./RecordControlButtons";
 
 interface RecorderProps {
     // Potential props for customization
@@ -103,15 +96,7 @@ const Recorder: React.FC<RecorderProps> = () => {
                 {/* Canvas for combining streams */}
                 <canvas ref={canvasRef} width={640} height={480}/>
 
-                <Box>
-                    <CtrlRecordBtn onRecord={startRecording} onStop={stopRecording}/>
-                    <IconButton color="primary" size="large">
-                        <Pause/>
-                    </IconButton>
-                    <IconButton color="primary" size="large">
-                        <SaveAlt/>
-                    </IconButton>
-                </Box>
+                <RecordControlButtons onRecord={startRecording} onStop={stopRecording}/>
 
                 {recordedBlob && <video src={URL.createObjectURL(recordedBlob)} controls/>}
             </Box>

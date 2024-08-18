@@ -2,11 +2,23 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { red } from '@mui/material/colors';
-import Fab from '@mui/material/Fab';
+import {
+    Fab,
+    SpeedDial,
+    SpeedDialAction,
+    SpeedDialIcon,
+} from '@mui/material';
 import {
     FiberManualRecord,
     StopCircle,
+    Pause,
+    SaveAlt,
 } from "@mui/icons-material";
+
+const actions = [
+    { icon: <SaveAlt />, name: 'Save' },
+    { icon: <Pause />, name: 'Pause' },
+];
 
 export default function CircularIntegration({onRecord, onStop}) {
     const [loading, setLoading] = React.useState(false);
@@ -42,7 +54,7 @@ export default function CircularIntegration({onRecord, onStop}) {
     };
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', position: 'absolute', top: '50%' }}>
             <Box sx={{ m: 1, position: 'relative' }}>
                 <Fab
                     aria-label="start-stop"
@@ -64,6 +76,22 @@ export default function CircularIntegration({onRecord, onStop}) {
                         }}
                     />
                 )}
+                {/*Just use speed dial for its actions, but not for the main button*/}
+                {/*And always display it*/}
+                <SpeedDial
+                    ariaLabel="control buttons"
+                    open={true}
+                    hidden={true}
+                    icon={<SpeedDialIcon />}
+                >
+                    {actions.map((action) => (
+                        <SpeedDialAction
+                            key={action.name}
+                            icon={action.icon}
+                            tooltipTitle={action.name}
+                        />
+                    ))}
+                </SpeedDial>
             </Box>
         </Box>
     );
