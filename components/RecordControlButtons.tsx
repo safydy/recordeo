@@ -13,11 +13,13 @@ import {
     StopCircle,
     Pause,
     SaveAlt,
+    NotStarted,
 } from "@mui/icons-material";
 
 const actions = [
     { icon: <SaveAlt />, name: 'Save' },
     { icon: <Pause />, name: 'Pause' },
+    { icon: <NotStarted />, name: 'Resume' },
 ];
 
 export default function CircularIntegration({onRecord, onStop}) {
