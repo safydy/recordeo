@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import RecordRTC from 'recordrtc';
 import Box from "@mui/material/Box";
 import RecordControlButtons from "./RecordControlButtons";
+import ConfigPanel from "@/components/ConfigPanel";
 
 interface RecorderProps {
     // Potential props for customization
@@ -105,7 +106,7 @@ const Recorder: React.FC<RecorderProps> = () => {
                 <canvas ref={canvasRef} width={640} height={480}/>
 
                 <RecordControlButtons onRecord={startRecording} onStop={stopRecording}/>
-
+                <ConfigPanel/>
                 {recordedBlob && <video src={URL.createObjectURL(recordedBlob)} controls/>}
             </Box>
         </>
