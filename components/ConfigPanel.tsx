@@ -1,4 +1,12 @@
-import {Drawer, Fab} from '@mui/material';
+import {
+    Drawer,
+    Fab,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+} from '@mui/material';
 import Box from "@mui/material/Box";
 import {
     Settings as SettingsIcon
@@ -7,9 +15,14 @@ import * as React from "react";
 
 export default function ConfigPanel() {
     const [isOpen, setIsOpen] = React.useState(false);
+    const [avatarPosition, setAvatarPosition] = React.useState('bottom-right');
 
-    function toggleDrawer() {
+    const toggleDrawer = () => {
         setIsOpen(!isOpen);
+    }
+
+    const handleAvatarPositionChange = (event: SelectChangeEvent<{ value: string }>) => {
+        setAvatarPosition(event.target.value as string);
     }
 
     return (
@@ -26,14 +39,27 @@ export default function ConfigPanel() {
                 </Box>
             </Box>
             <Drawer open={isOpen} anchor='right' onClose={toggleDrawer}>
-                <div>
-                    <h2>Param1</h2>
-                    <label htmlFor="param1">Param1</label>
-                    <input id="param1" type="text"/>
-
-                    <h2>Param2</h2>
-                    Amet animi commodi dicta dolore impedit libero,
-                </div>
+                <Box sx={{padding: 2, minWidth: 350}}>
+                    <FormControl fullWidth>
+                        <InputLabel id="avatar-position-select-label">Avatar Position</InputLabel>
+                        <Select
+                            labelId="avatar-position-select-label"
+                            id="avatar-position-select"
+                            value={avatarPosition}
+                            label="Age"
+                            onChange={handleAvatarPositionChange}
+                        >
+                            <MenuItem value='top-left'>Top Left</MenuItem>
+                            <MenuItem value='top'>Top</MenuItem>
+                            <MenuItem value='top-right'>Top Right</MenuItem>
+                            <MenuItem value='bottom-left'>Bottom Left</MenuItem>
+                            <MenuItem value='bottom'>Bottom</MenuItem>
+                            <MenuItem value='bottom-right'>Bottom Right</MenuItem>
+                            <MenuItem value='left'>Left</MenuItem>
+                            <MenuItem value='right'>Right</MenuItem>
+                        </Select>
+                    </FormControl>
+                </Box>
             </Drawer>
         </>
     )

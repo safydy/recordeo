@@ -8,13 +8,17 @@ Feature 1- implement a recorder page
   - [x] add screen stream
   - [x] add	camera stream
   - [x] share screen/window
-- 1- [x] improve styles (css, layout, etc)
-- 2- [x] add control buttons
+- 1- styles/layout/etc
+  - [x] improve styles (css, layout, etc)
+  - [x] clean nextjs boilerplate codes
+- 2- control buttons
   - [x] add start/stop recording
   - [x] add pause/resume recording
   - [x] add save recording
   - [x] end streams on stop
--	3- [ ] add config panel
+-	3- First config
+  - [x] add config panel
+  - [x] add redux & share configs with store
   - [ ] add style for avatar
   - [ ] config avatar position
 
