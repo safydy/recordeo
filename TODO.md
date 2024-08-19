@@ -9,23 +9,24 @@ Feature 1- implement a recorder page
   - [x] add	camera stream
   - [x] share screen/window
 - 1- [x] improve styles (css, layout, etc)
-- 2- [ ] add control buttons
+- 2- [x] add control buttons
   - [x] add start/stop recording
   - [x] add pause/resume recording
   - [x] add save recording
   - [x] end streams on stop
-- [ ] capture audio stream
-- 3- [ ] add recording status + time
--	4- [ ] add config panel
+-	3- [ ] add config panel
   - [ ] add style for avatar
   - [ ] config avatar position
-  - [ ] config output type
-  - [ ] config quality
-- 5- [ ] add audio visualizations
-
-2- implement a player/editor page
-
 
 ### Backlog
+Feature 1- implement a recorder page
 - [ ] use recorderrtc to record canvas & multiple streams
 - [ ] open source it and add license
+- [ ] capture audio stream
+- [ ] add recording status + time
+- [ ] Extra configs
+  - [ ] config output type
+  - [ ] config quality
+- [ ] add audio visualizations
+
+Feature 2- implement a player/editor page
