@@ -5,6 +5,7 @@ import RecordRTC from 'recordrtc';
 import Box from "@mui/material/Box";
 import RecordControlButtons from "./RecordControlButtons";
 import ConfigPanel from "@/components/ConfigPanel";
+import {circleClip} from "@/utils/shapeDrawer";
 
 interface RecorderProps {
     // Potential props for customization
@@ -16,7 +17,7 @@ const Recorder: React.FC<RecorderProps> = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isRecording, setIsRecording] = useState(false);
     const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
-    const [avatarPosition, setAvatarPosition] = useState({ x: 10, y: 10 });
+    const [avatarPosition, setAvatarPosition] = useState({ x: 32, y: 32 });
     const recorderRef = useRef<MediaRecorder | null>(null);
     const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
     const [webcamStream, setWebcamStream] = useState<MediaStream | null>(null);
@@ -76,7 +77,14 @@ const Recorder: React.FC<RecorderProps> = () => {
 
         const draw = () => {
             context.drawImage(screenVideo, 0, 0, canvas.width, canvas.height);
-            context.drawImage(webcamVideo, avatarPosition.x, avatarPosition.y, 64, 64);
+
+            const webcamWidth = 64;
+            const webcamHeight = 64;
+            const avatarRadius = webcamWidth / 2; // Radius of the circle
+            circleClip(context, avatarPosition.x, avatarPosition.y, avatarRadius, () => {
+                context.drawImage(webcamVideo, avatarPosition.x, avatarPosition.y, webcamWidth, webcamHeight);
+            })
+
             requestAnimationFrame(draw);
         };
 
