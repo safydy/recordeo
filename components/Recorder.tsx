@@ -92,13 +92,15 @@ const Recorder: React.FC<RecorderProps> = () => {
         return canvas.captureStream();
     };
 
-    const stopRecording = () => {
+    const stopRecording = (shouldSetBlob: boolean = true) => {
         if (recorderRef.current) {
             recorderRef.current.stopRecording(() => {
                 screenStream.stop();
                 webcamStream.stop();
 
-                setRecordedBlob(recorderRef.current.getBlob());
+                if (shouldSetBlob) {
+                    setRecordedBlob(recorderRef.current.getBlob());
+                }
                 setIsRecording(false);
             });
         }

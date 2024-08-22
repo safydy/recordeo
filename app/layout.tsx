@@ -1,6 +1,6 @@
 'use client';
 
-import type {Metadata} from "next";
+import { Provider as ReduxProvider } from 'react-redux';
 import {Inter} from "next/font/google";
 import "./globals.css";
 import Box from "@mui/material/Box";
@@ -13,7 +13,7 @@ import {createTheme, ThemeProvider} from "@mui/material/styles";
 import getLPTheme from "@/app/getLPTheme";
 import CssBaseline from "@mui/material/CssBaseline";
 import AppAppBar from "@/components/AppAppBar";
-import Footer from "@/components/Footer";
+import { store } from "@/stores/store";
 
 const inter = Inter({subsets: ["latin"]});
 
@@ -82,24 +82,26 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={inter.className}>
-                <ThemeProvider theme={showCustomTheme ? LPtheme : defaultTheme}>
-                    <CssBaseline/>
-                    <AppAppBar mode={mode} toggleColorMode={toggleColorMode}/>
+                <ReduxProvider store={store}>
+                    <ThemeProvider theme={showCustomTheme ? LPtheme : defaultTheme}>
+                        <CssBaseline/>
+                        <AppAppBar mode={mode} toggleColorMode={toggleColorMode}/>
 
-                    <Box sx={{
-                        minHeight: 100,
-                    }}>
-                        {/*just to skip the nav bar*/}
-                    </Box>
-                    {children}
-                    {/*<Box sx={{bgcolor: 'background.default'}}>*/}
-                    {/*    <Footer/>*/}
-                    {/*</Box>*/}
-                    <ToggleCustomTheme
-                        showCustomTheme={showCustomTheme}
-                        toggleCustomTheme={toggleCustomTheme}
-                    />
-                </ThemeProvider>
+                        <Box sx={{
+                            minHeight: 100,
+                        }}>
+                            {/*just to skip the nav bar*/}
+                        </Box>
+                        {children}
+                        {/*<Box sx={{bgcolor: 'background.default'}}>*/}
+                        {/*    <Footer/>*/}
+                        {/*</Box>*/}
+                        <ToggleCustomTheme
+                            showCustomTheme={showCustomTheme}
+                            toggleCustomTheme={toggleCustomTheme}
+                        />
+                    </ThemeProvider>
+                </ReduxProvider>
             </body>
         </html>
     );

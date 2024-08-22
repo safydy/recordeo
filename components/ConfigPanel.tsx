@@ -1,3 +1,4 @@
+import { useSelector, useDispatch } from 'react-redux';
 import {
     Drawer,
     Fab,
@@ -12,17 +13,25 @@ import {
     Settings as SettingsIcon
 } from "@mui/icons-material";
 import * as React from "react";
+import {
+    updateStatus,
+    webcamUpdatePosition,
+    webcamUpdateDimensions, CategoricalPositionType,
+} from "@/stores/features/recorder";
 
 export default function ConfigPanel() {
+    const {getStatus, getWebcamDimension, getWebcamPosition} = useSelector((state) => state.recorder);
+    const dispatch = useDispatch();
+
     const [isOpen, setIsOpen] = React.useState(false);
-    const [avatarPosition, setAvatarPosition] = React.useState('bottom-right');
+    // const [avatarPosition, setAvatarPosition] = React.useState('bottom-right');
 
     const toggleDrawer = () => {
         setIsOpen(!isOpen);
     }
 
-    const handleAvatarPositionChange = (event: SelectChangeEvent<{ value: string }>) => {
-        setAvatarPosition(event.target.value as string);
+    const handleAvatarPositionChange = (event: SelectChangeEvent<{ value: CategoricalPositionType }>) => {
+        dispatch(webcamUpdatePosition(event.target.value as CategoricalPositionType))
     }
 
     return (
@@ -45,7 +54,7 @@ export default function ConfigPanel() {
                         <Select
                             labelId="avatar-position-select-label"
                             id="avatar-position-select"
-                            value={avatarPosition}
+                            value={getWebcamPosition}
                             label="Age"
                             onChange={handleAvatarPositionChange}
                         >
