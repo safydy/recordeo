@@ -16,12 +16,15 @@ import * as React from "react";
 import {
     updateStatus,
     webcamUpdatePosition,
-    webcamUpdateDimensions, CategoricalPositionType,
+    webcamUpdateDimensions,
+    getWebcamPosition,
+    CategoricalPositionType,
 } from "@/stores/features/recorder";
+import {useAppDispatch, useAppSelector} from "@/utils/storeHooks";
 
 export default function ConfigPanel() {
-    const {getStatus, getWebcamDimension, getWebcamPosition} = useSelector((state) => state.recorder);
-    const dispatch = useDispatch();
+    const webcamPosition = useAppSelector(getWebcamPosition);
+    const dispatch = useAppDispatch();
 
     const [isOpen, setIsOpen] = React.useState(false);
     // const [avatarPosition, setAvatarPosition] = React.useState('bottom-right');
@@ -54,7 +57,7 @@ export default function ConfigPanel() {
                         <Select
                             labelId="avatar-position-select-label"
                             id="avatar-position-select"
-                            value={getWebcamPosition}
+                            value={webcamPosition}
                             label="Age"
                             onChange={handleAvatarPositionChange}
                         >

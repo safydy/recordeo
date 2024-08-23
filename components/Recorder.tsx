@@ -1,121 +1,73 @@
 'use client';
-
-import React, { useState, useRef, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import RecordRTC from 'recordrtc';
+import React, { useState, useRef, useEffect } from 'react';
 import Box from "@mui/material/Box";
 import RecordControlButtons from "./RecordControlButtons";
 import ConfigPanel from "@/components/ConfigPanel";
-import {circleClip} from "@/utils/shapeDrawer";
+import {
+    getScreenDimension,
+    getCanvasRef,
+    getRecordedBlob,
+    getCombinedStream,
+    stopRecording,
+    setScreenStream,
+    setWebcamStream,
+    combineStreams,
+    updateRecorderRef,
+    updateStatus,
+    canvasUpdateRef,
+} from "@/stores/features/recorder";
+import { useAppSelector, useAppDispatch } from "@/utils/storeHooks";
 
 interface RecorderProps {
     // Potential props for customization
 }
 
 const Recorder: React.FC<RecorderProps> = () => {
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const webcamRef = useRef<HTMLVideoElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [isRecording, setIsRecording] = useState(false);
-    const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
-    const [avatarPosition, setAvatarPosition] = useState({ x: 32, y: 32 });
-    const recorderRef = useRef<MediaRecorder | null>(null);
-    const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
-    const [webcamStream, setWebcamStream] = useState<MediaStream | null>(null);
+    const screenDimension = useAppSelector(getScreenDimension);
+    const combinedStream = useAppSelector(getCombinedStream);
+    const recordedBlob = useAppSelector(getRecordedBlob);
+    const dispatch = useAppDispatch();
 
-    const startRecording = async () => {
-        try {
-            const currentScreenStream = await getScreenStream();
-            const currentWebcamStream = await navigator.mediaDevices.getUserMedia({ video: true });
-
-            setScreenStream(currentScreenStream);
-            setWebcamStream(currentWebcamStream);
-
-            const combinedStream = combineStreams(currentScreenStream, currentWebcamStream);
-            if (!combinedStream) return;
-
-            const recorder = RecordRTC(combinedStream, { type: 'video' });
-            recorderRef.current = recorder;
-            recorder.startRecording();
-
-            setIsRecording(true);
-        } catch (error) {
-            console.error('Error starting recording:', error);
+    useEffect(() => {
+        if (canvasRef.current) {
+            dispatch(canvasUpdateRef(canvasRef.current));
         }
-    };
+    }, [canvasRef]);
 
-    async function getScreenStream() {
-        try {
-            const displayMediaOptions: MediaStreamConstraints = {
-                video: true,
-            };
+    const handleStartRecording = async () => {
+        await dispatch(setScreenStream());
+        await dispatch(setWebcamStream());
+        await dispatch(combineStreams());
 
-            // For selecting a specific window, you can use the following:
-            // displayMediaOptions.video = { mediaSource: 'window' };
-
-            const stream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
-            return stream;
-        } catch (error) {
-            console.error('Error capturing screen:', error);
-            return null;
+        if (!combinedStream) {
+            console.error('no combined stream found');
+            return;
         }
+
+        const recorder = RecordRTC(combinedStream, { type: 'video' });
+        dispatch(updateRecorderRef(recorder))
+        recorder.startRecording();
+
+        dispatch(updateStatus("recording"));
     }
 
-    const combineStreams = (currentScreenStream, currentWebcamStream) => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-
-        const screenVideo = document.createElement('video');
-        screenVideo.srcObject = currentScreenStream;
-        screenVideo.play();
-
-        const webcamVideo = document.createElement('video');
-        webcamVideo.srcObject = currentWebcamStream;
-        webcamVideo.play();
-
-        const context = canvas.getContext('2d');
-        if (!context) return;
-
-        const draw = () => {
-            context.drawImage(screenVideo, 0, 0, canvas.width, canvas.height);
-
-            const webcamWidth = 64;
-            const webcamHeight = 64;
-            const avatarRadius = webcamWidth / 2; // Radius of the circle
-            circleClip(context, avatarPosition.x, avatarPosition.y, avatarRadius, () => {
-                context.drawImage(webcamVideo, avatarPosition.x, avatarPosition.y, webcamWidth, webcamHeight);
-            })
-
-            requestAnimationFrame(draw);
-        };
-
-        draw();
-        return canvas.captureStream();
-    };
-
-    const stopRecording = (shouldSetBlob: boolean = true) => {
-        if (recorderRef.current) {
-            recorderRef.current.stopRecording(() => {
-                screenStream.stop();
-                webcamStream.stop();
-
-                if (shouldSetBlob) {
-                    setRecordedBlob(recorderRef.current.getBlob());
-                }
-                setIsRecording(false);
-            });
-        }
-    };
+    const handleStopRecording = () => {
+        dispatch(stopRecording({shouldSetBlob: true}))
+    }
 
     return (
         <>
             <Box className="recorder">
                 {/* Screen recording element */}
-                <video ref={videoRef} autoPlay></video>
+                {/*<video ref={videoRef} autoPlay></video>*/}
 
                 {/* Canvas for combining streams */}
-                <canvas ref={canvasRef} width={640} height={480}/>
+                <canvas ref={canvasRef} width={screenDimension.width} height={screenDimension.height}/>
 
-                <RecordControlButtons onRecord={startRecording} onStop={stopRecording}/>
+                <RecordControlButtons onRecord={handleStartRecording} onStop={handleStopRecording}/>
                 <ConfigPanel/>
                 {recordedBlob && <video src={URL.createObjectURL(recordedBlob)} controls/>}
             </Box>
