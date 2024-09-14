@@ -1,4 +1,3 @@
-import { useSelector, useDispatch } from 'react-redux';
 import {
     Drawer,
     Fab,
@@ -15,6 +14,7 @@ import {
 } from "@mui/icons-material";
 import * as React from "react";
 import {
+    getStatus,
     updateStatus,
     webcamUpdatePosition,
     webcamUpdateDimensions,
@@ -41,8 +41,8 @@ export default function ConfigPanel() {
         dispatch(webcamUpdatePosition(event.target.value as CategoricalPositionType))
     }
 
-    const handleAvatarMarginChange = (event: SelectChangeEvent<{ value: number }>) => {
-        dispatch(webcamUpdateMargin(event.target.value as number))
+    const handleAvatarMarginChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(webcamUpdateMargin(event.target.value))
     }
 
     return (

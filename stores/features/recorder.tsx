@@ -1,7 +1,6 @@
-import { createAsyncThunk, createSlice } from "@reduxjs/toolkit"
+import { createSlice } from "@reduxjs/toolkit"
 import type { PayloadAction } from "@reduxjs/toolkit"
-import type { RootState, AppThunk } from "@/stores/store"
-import {circleClip} from "@/utils/shapeDrawer";
+import type { RootState } from "@/stores/store"
 
 export interface IDimension {
     height: number

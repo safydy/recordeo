@@ -5,6 +5,7 @@ import Box from "@mui/material/Box";
 import RecordControlButtons from "./RecordControlButtons";
 import ConfigPanel from "@/components/ConfigPanel";
 import {
+    getStatus,
     getScreenDimension,
     getWebcamDimension,
     getWebcamPosition,
@@ -20,6 +21,8 @@ interface RecorderProps {
 }
 
 const Recorder: React.FC<RecorderProps> = () => {
+    const recordingStatus = useAppSelector(getStatus);
+    let isDrawing = false;
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const canvasDimension = useAppSelector(getCanvasDimension);
 
@@ -32,13 +35,15 @@ const Recorder: React.FC<RecorderProps> = () => {
     // Pay attention, useState is async, so you can't rely on the value immediately after setting it
     const [screenStream, setScreenStream] = useState<MediaStream | null>(null);
     const [webcamStream, setWebcamStream] = useState<MediaStream | null>(null);
-    const [combinedStream, setCombinedStream] = useState<MediaStream | null>(null);
+    const [combinedStream, setCombinedStream] = useState<{stream: MediaStream | null, stopDrawing: () => void}>(null);
     const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null);
 
     const dispatch = useAppDispatch();
 
     const handleStartRecording = async () => {
         try {
+            console.debug('starting recording ...')
+            dispatch(updateStatus("recording"));
             const currentScreenStream = await getNewScreenStream() as MediaStream;
             const currentWebcamStream = await getNewWebcamStream() as MediaStream;
             setScreenStream(currentScreenStream);
@@ -52,11 +57,9 @@ const Recorder: React.FC<RecorderProps> = () => {
                 return;
             }
 
-            const recorder = RecordRTC(currentCombinedStream, {type: 'video'});
+            const recorder = RecordRTC(currentCombinedStream.stream, {type: 'video'});
             recorderRef.current = recorder;
             recorder.startRecording();
-
-            dispatch(updateStatus("recording"));
         } catch (error) {
             console.error('Error starting recording:', error);
         }
@@ -84,13 +87,23 @@ const Recorder: React.FC<RecorderProps> = () => {
         const context = canvas.getContext('2d');
         if (!context) return;
 
+        // Provide a way to stop the drawing loop recursion
+        const stopDrawing = () => {
+            isDrawing = false;
+        };
+
         const draw = () => {
-            //TODO: fix indefinite drawing, even after stop
-            // console.debug('drawing combined streams ...');
+            if (!isDrawing) {
+                // Stop the loop created by requestAnimationFrame()
+                return;
+            }
+            console.debug('drawing combined streams ...', {
+                isDrawing,
+                recordingStatus,
+            });
             context.drawImage(screenVideo, 0, 0, canvasDimension.width, canvasDimension.height);
             const avatarRadius = webcamDimension.width / 2; // Radius of the circle
             const { x, y } = webcamXYPositions;
-            console.debug('test rs', webcamXYPositions);
             circleClip(context, x, y, avatarRadius, () => {
                 context.drawImage(webcamVideo, x, y, webcamDimension.width, webcamDimension.height);
             })
@@ -98,8 +111,13 @@ const Recorder: React.FC<RecorderProps> = () => {
             requestAnimationFrame(draw);
         };
 
+        isDrawing = true;
         draw();
-        return canvas.captureStream();
+
+        return {
+            stream: canvas.captureStream(),
+            stopDrawing,
+        };
     }
 
     const handleStopRecording = (action: {shouldSetBlob: boolean} = {shouldSetBlob: true}) => {
@@ -107,11 +125,18 @@ const Recorder: React.FC<RecorderProps> = () => {
             recorderRef.current.stopRecording(() => {
                 screenStream?.getTracks().forEach(track => track.stop());
                 webcamStream?.getTracks().forEach(track => track.stop());
-                combinedStream?.getTracks().forEach(track => track.stop());
+                combinedStream.stream?.getTracks().forEach(track => track.stop());
+
+                combinedStream.stopDrawing();
 
                 if (action.shouldSetBlob) {
                     setRecordedBlob(recorderRef.current?.getBlob());
                 }
+
+                console.debug('recording stopped', {
+                    isDrawing,
+                    recordingStatus,
+                })
                 dispatch(updateStatus("stopped"));
             });
         }
