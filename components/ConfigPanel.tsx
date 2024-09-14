@@ -6,6 +6,7 @@ import {
     InputLabel,
     MenuItem,
     Select,
+    Input,
     SelectChangeEvent,
 } from '@mui/material';
 import Box from "@mui/material/Box";
@@ -17,13 +18,16 @@ import {
     updateStatus,
     webcamUpdatePosition,
     webcamUpdateDimensions,
+    webcamUpdateMargin,
     getWebcamPosition,
+    getWebcamMargin,
     CategoricalPositionType,
 } from "@/stores/features/recorder";
 import {useAppDispatch, useAppSelector} from "@/utils/storeHooks";
 
 export default function ConfigPanel() {
     const webcamPosition = useAppSelector(getWebcamPosition);
+    const webcamMargin = useAppSelector(getWebcamMargin);
     const dispatch = useAppDispatch();
 
     const [isOpen, setIsOpen] = React.useState(false);
@@ -35,6 +39,10 @@ export default function ConfigPanel() {
 
     const handleAvatarPositionChange = (event: SelectChangeEvent<{ value: CategoricalPositionType }>) => {
         dispatch(webcamUpdatePosition(event.target.value as CategoricalPositionType))
+    }
+
+    const handleAvatarMarginChange = (event: SelectChangeEvent<{ value: number }>) => {
+        dispatch(webcamUpdateMargin(event.target.value as number))
     }
 
     return (
@@ -52,10 +60,9 @@ export default function ConfigPanel() {
             </Box>
             <Drawer open={isOpen} anchor='right' onClose={toggleDrawer}>
                 <Box sx={{padding: 2, minWidth: 350}}>
-                    <FormControl fullWidth>
+                    <FormControl fullWidth sx={{marginBottom: 1}}>
                         <InputLabel id="avatar-position-select-label">Avatar Position</InputLabel>
                         <Select
-                            labelId="avatar-position-select-label"
                             id="avatar-position-select"
                             value={webcamPosition}
                             label="Age"
@@ -70,6 +77,15 @@ export default function ConfigPanel() {
                             <MenuItem value='left'>Left</MenuItem>
                             <MenuItem value='right'>Right</MenuItem>
                         </Select>
+                    </FormControl>
+
+                    <FormControl fullWidth>
+                        <InputLabel id="avatar-margin-select-label">Avatar Margin</InputLabel>
+                        <Input
+                            type="number"
+                            inputProps={{min: 0}}
+                            value={webcamMargin}
+                            onChange={handleAvatarMarginChange} />
                     </FormControl>
                 </Box>
             </Drawer>

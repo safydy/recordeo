@@ -16,6 +16,7 @@ export interface RecorderState {
     webcam: {
         dimension: IDimension
         position: CategoricalPositionType,
+        margin: number,
     },
     screen: {
         dimension: IDimension,
@@ -33,6 +34,7 @@ const initialState: RecorderState = {
             height: 64,
         },
         position: "top-left",
+        margin: 10,
     },
     screen: {
         dimension: {
@@ -61,6 +63,9 @@ export const recorderSlice = createSlice({
         webcamUpdatePosition: (state, action: PayloadAction<CategoricalPositionType>) => {
             state.webcam.position = action.payload
         },
+        webcamUpdateMargin: (state, action: PayloadAction<string>) => {
+            state.webcam.margin = parseInt(action.payload, 10)
+        },
         screenUpdateDimensions: (state, action: PayloadAction<IDimension>) => {
             state.screen.dimension = action.payload
         },
@@ -74,6 +79,7 @@ export const {
     updateStatus,
     webcamUpdateDimensions,
     webcamUpdatePosition,
+    webcamUpdateMargin,
     screenUpdateDimensions,
     canvasUpdateDimensions,
 } = recorderSlice.actions
@@ -89,13 +95,14 @@ export default recorderSlice.reducer
 export const getStatus = (state: RootState) => state.recorder.status
 export const getWebcamDimension = (state: RootState) => state.recorder.webcam.dimension
 export const getWebcamPosition = (state: RootState) => state.recorder.webcam.position
+export const getWebcamMargin = (state: RootState) => state.recorder.webcam.margin
 export const getScreenDimension = (state: RootState) => state.recorder.screen.dimension
 export const getCanvasDimension = (state: RootState) => state.recorder.canvas.dimension
 
 export const getWebcamXYPositions = (state: RootState) => {
     const { width: screenWidth, height: screenHeight } = state.recorder.screen.dimension;
     const { width: webcamWidth, height: webcamHeight } = state.recorder.webcam.dimension;
-    const margin = 10;
+    const margin = state.recorder.webcam.margin;
 
     switch (state.recorder.webcam.position) {
         case 'top':

@@ -85,9 +85,12 @@ const Recorder: React.FC<RecorderProps> = () => {
         if (!context) return;
 
         const draw = () => {
+            //TODO: fix indefinite drawing, even after stop
+            // console.debug('drawing combined streams ...');
             context.drawImage(screenVideo, 0, 0, canvasDimension.width, canvasDimension.height);
             const avatarRadius = webcamDimension.width / 2; // Radius of the circle
             const { x, y } = webcamXYPositions;
+            console.debug('test rs', webcamXYPositions);
             circleClip(context, x, y, avatarRadius, () => {
                 context.drawImage(webcamVideo, x, y, webcamDimension.width, webcamDimension.height);
             })
