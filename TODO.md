@@ -19,14 +19,20 @@ Feature 1- implement a recorder page
 -	3- First config
   - [x] add config panel
   - [x] add redux & share configs with store
-  - [ ] add style for avatar
-  - [ ] config avatar position
+  - [x] add circle style for avatar
+  - [x] config avatar position
+  - [ ] config avatar size
+- 4- configure screen dimension
+  - [ ] add screen dimension config
+  - [ ] improve control buttons panel position
+- 5- audio stream
+  - [ ] add audio stream
+  - [ ] add audio stream configs
 
 ### Backlog
 Feature 1- implement a recorder page
 - [ ] use recorderrtc to record canvas & multiple streams
 - [ ] open source it and add license
-- [ ] capture audio stream
 - [ ] add recording status + time
 - [ ] Extra configs
   - [ ] config output type
