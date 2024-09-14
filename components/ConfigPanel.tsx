@@ -21,6 +21,7 @@ import {
     webcamUpdateMargin,
     getWebcamPosition,
     getWebcamMargin,
+    getWebcamDimension,
     CategoricalPositionType,
 } from "@/stores/features/recorder";
 import {useAppDispatch, useAppSelector} from "@/utils/storeHooks";
@@ -28,6 +29,7 @@ import {useAppDispatch, useAppSelector} from "@/utils/storeHooks";
 export default function ConfigPanel() {
     const webcamPosition = useAppSelector(getWebcamPosition);
     const webcamMargin = useAppSelector(getWebcamMargin);
+    const webcamDimension = useAppSelector(getWebcamDimension);
     const dispatch = useAppDispatch();
 
     const [isOpen, setIsOpen] = React.useState(false);
@@ -43,6 +45,13 @@ export default function ConfigPanel() {
 
     const handleAvatarMarginChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(webcamUpdateMargin(event.target.value))
+    }
+
+    const handleAvatarSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(webcamUpdateDimensions({
+            width: parseInt(event.target.value, 10),
+            height: parseInt(event.target.value, 10),
+        }))
     }
 
     return (
@@ -61,7 +70,7 @@ export default function ConfigPanel() {
             <Drawer open={isOpen} anchor='right' onClose={toggleDrawer}>
                 <Box sx={{padding: 2, minWidth: 350}}>
                     <FormControl fullWidth sx={{marginBottom: 1}}>
-                        <InputLabel id="avatar-position-select-label">Avatar Position</InputLabel>
+                        <InputLabel id="avatar-position-select-label">Position</InputLabel>
                         <Select
                             id="avatar-position-select"
                             value={webcamPosition}
@@ -79,13 +88,22 @@ export default function ConfigPanel() {
                         </Select>
                     </FormControl>
 
-                    <FormControl fullWidth>
-                        <InputLabel id="avatar-margin-select-label">Avatar Margin</InputLabel>
+                    <FormControl fullWidth sx={{marginBottom: 1}}>
+                        <InputLabel id="avatar-margin-select-label">Margin</InputLabel>
                         <Input
                             type="number"
                             inputProps={{min: 0}}
                             value={webcamMargin}
                             onChange={handleAvatarMarginChange} />
+                    </FormControl>
+
+                    <FormControl fullWidth>
+                        <InputLabel id="avatar-size-select-label">Size</InputLabel>
+                        <Input
+                            type="number"
+                            inputProps={{min: 0}}
+                            value={webcamDimension.width}
+                            onChange={handleAvatarSizeChange} />
                     </FormControl>
                 </Box>
             </Drawer>

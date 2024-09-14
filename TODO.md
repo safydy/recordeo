@@ -21,10 +21,11 @@ Feature 1- implement a recorder page
   - [x] add redux & share configs with store
   - [x] add circle style for avatar
   - [x] config avatar position
-  - [ ] config avatar size
+  - [x] config avatar size
 - 4- configure screen dimension
   - [ ] add screen dimension config
   - [ ] improve control buttons panel position
+  - [ ] add sections on config panel: screen, webcam, audio
 - 5- audio stream
   - [ ] add audio stream
   - [ ] add audio stream configs
