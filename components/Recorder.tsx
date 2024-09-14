@@ -10,6 +10,7 @@ import {
     getWebcamPosition,
     getCanvasDimension,
     updateStatus,
+    getWebcamXYPositions,
 } from "@/stores/features/recorder";
 import { useAppSelector, useAppDispatch } from "@/utils/storeHooks";
 import {circleClip} from "@/utils/shapeDrawer";
@@ -25,7 +26,7 @@ const Recorder: React.FC<RecorderProps> = () => {
     const screenDimension = useAppSelector(getScreenDimension);
 
     const webcamDimension = useAppSelector(getWebcamDimension);
-    const webcamPosition = useAppSelector(getWebcamPosition);
+    const webcamXYPositions = useAppSelector(getWebcamXYPositions);
 
     const recorderRef = useRef<MediaRecorder | null>(null);
     // Pay attention, useState is async, so you can't rely on the value immediately after setting it
@@ -86,9 +87,7 @@ const Recorder: React.FC<RecorderProps> = () => {
         const draw = () => {
             context.drawImage(screenVideo, 0, 0, canvasDimension.width, canvasDimension.height);
             const avatarRadius = webcamDimension.width / 2; // Radius of the circle
-            //TODO: get x and y from webcamPosition
-            const x = 50; //webcamPosition.x;
-            const y = 50; //webcamPosition.y;
+            const { x, y } = webcamXYPositions;
             circleClip(context, x, y, avatarRadius, () => {
                 context.drawImage(webcamVideo, x, y, webcamDimension.width, webcamDimension.height);
             })

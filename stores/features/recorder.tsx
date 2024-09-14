@@ -91,6 +91,34 @@ export const getWebcamDimension = (state: RootState) => state.recorder.webcam.di
 export const getWebcamPosition = (state: RootState) => state.recorder.webcam.position
 export const getScreenDimension = (state: RootState) => state.recorder.screen.dimension
 export const getCanvasDimension = (state: RootState) => state.recorder.canvas.dimension
+
+export const getWebcamXYPositions = (state: RootState) => {
+    const { width: screenWidth, height: screenHeight } = state.recorder.screen.dimension;
+    const { width: webcamWidth, height: webcamHeight } = state.recorder.webcam.dimension;
+    const margin = 10;
+
+    switch (state.recorder.webcam.position) {
+        case 'top':
+            return { x: (screenWidth - webcamWidth) / 2, y: margin };
+        case 'bottom':
+            return { x: (screenWidth - webcamWidth) / 2, y: screenHeight - webcamHeight - margin };
+        case 'left':
+            return { x: margin, y: (screenHeight - webcamHeight) / 2 };
+        case 'right':
+            return { x: screenWidth - webcamWidth - margin, y: (screenHeight - webcamHeight) / 2 };
+        case 'top-left':
+            return { x: margin, y: margin };
+        case 'top-right':
+            return { x: screenWidth - webcamWidth - margin, y: margin };
+        case 'bottom-left':
+            return { x: margin, y: screenHeight - webcamHeight - margin };
+        case 'bottom-right':
+            return { x: screenWidth - webcamWidth - margin, y: screenHeight - webcamHeight - margin };
+        default:
+            return undefined;
+            throw new Error(`Invalid categorical position: ${state.recorder.webcam.position}`);
+    }
+}
 /**
  * ######## Thunks #######
  * which can contain both sync and async logic
